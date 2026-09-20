@@ -2,24 +2,9 @@
 
 Release Rat is intentionally small: deterministic polling and persistence do the mechanical work, while an optional language-model call handles the one part that benefits from judgment.
 
-```text
-config.json
-    |
-    v
-GitHub REST API ---> release candidates ---> SQLite state
-                                           |
-                                           v
-                         OpenAI-compatible judge
-                         + heuristic fallback
-                                           |
-                              interesting release?
-                                /          \
-                              no            yes
-                              |              |
-                         record only         v
-                                   Discord webhook
-                                   or local JSONL log
-```
+![Release Rat pipeline](assets/pipeline.svg)
+
+The design rule is simple: **state and delivery should remain reliable even when the clever part fails.** The model is therefore an optional collaborator, not a structural dependency.
 
 ## Components
 

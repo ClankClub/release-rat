@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-labelledby="title desc">
+  <title id="title">Release Rat</title>
+  <desc id="desc">Release Rat. GitHub releases in. Signal out.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0d1117"/>
+      <stop offset="100%" stop-color="#161b22"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#d29922"/>
+      <stop offset="100%" stop-color="#f0b72f"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#30363d" stroke-width="1" opacity=".28"/>
+    </pattern>
+  </defs>
+
+  <rect x="1" y="1" width="1198" height="318" rx="28" fill="url(#bg)" stroke="#30363d" stroke-width="2"/>
+  <rect x="1" y="1" width="1198" height="318" rx="28" fill="url(#grid)" opacity=".55"/>
+
+  <g transform="translate(76 61)">
+    <circle cx="92" cy="99" r="72" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+    <path d="M44 111c-21 12-32 35-22 50 10 16 39 10 51-7" fill="none" stroke="#d29922" stroke-width="7" stroke-linecap="round"/>
+    <ellipse cx="95" cy="112" rx="43" ry="31" fill="#d29922"/>
+    <circle cx="130" cy="91" r="25" fill="#e3b341"/>
+    <circle cx="121" cy="69" r="12" fill="#f0b72f"/>
+    <circle cx="142" cy="73" r="10" fill="#f0b72f"/>
+    <circle cx="139" cy="88" r="3.8" fill="#0d1117"/>
+    <path d="M153 99l16 5-16 4" fill="none" stroke="#8c6b19" stroke-width="3" stroke-linecap="round"/>
+    <path d="M61 113l-13-9m14 20-17 1" fill="none" stroke="#8c6b19" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="84" cy="122" r="4" fill="#0d1117"/>
+  </g>
+
+  <rect x="286" y="62" width="4" height="196" rx="2" fill="url(#accent)"/>
+
+  <text x="334" y="128" fill="#f0f6fc" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="58" font-weight="700" letter-spacing="5">RELEASE RAT</text>
+  <text x="337" y="174" fill="#c9d1d9" font-family="system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="24">GitHub releases in. Signal out.</text>
+  <text x="337" y="211" fill="#8b949e" font-family="system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="17">self-hosted · stateful · significance-filtered</text>
+
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" fill="#c9d1d9">
+    <rect x="337" y="235" width="92" height="30" rx="15" fill="#21262d" stroke="#30363d"/>
+    <text x="357" y="255">SQLite</text>
+    <rect x="439" y="235" width="112" height="30" rx="15" fill="#21262d" stroke="#30363d"/>
+    <text x="458" y="255">stdlib-only</text>
+    <rect x="561" y="235" width="123" height="30" rx="15" fill="#21262d" stroke="#30363d"/>
+    <text x="580" y="255">optional LLM</text>
+    <rect x="694" y="235" width="96" height="30" rx="15" fill="#21262d" stroke="#30363d"/>
+    <text x="714" y="255">Discord</text>
+  </g>
+
+  <g transform="translate(1032 46)">
+    <rect width="104" height="32" rx="16" fill="#1f2d20" stroke="#2ea043"/>
+    <circle cx="21" cy="16" r="5" fill="#3fb950"/>
+    <text x="34" y="21" fill="#aff5b4" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13">v0.1.0</text>
+  </g>
+</svg>
