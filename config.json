@@ -1,0 +1,18 @@
+{
+  "repositories": [],
+  "poll_interval_seconds": 3600,
+  "include_prereleases": false,
+  "bootstrap_mode": "seed",
+  "state_path": "state.db",
+  "local_log_path": "release-log.jsonl",
+  "discord_webhook_env": "DISCORD_WEBHOOK_URL",
+  "github_token_env": "GITHUB_TOKEN",
+  "llm": {
+    "enabled": true,
+    "base_url_env": "OPENAI_BASE_URL",
+    "api_key_env": "OPENAI_API_KEY",
+    "model_env": "RELEASE_RAT_MODEL",
+    "default_base_url": "https://api.openai.com/v1",
+    "default_model": "gpt-5-mini"
+  }
+}

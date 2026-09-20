@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "release-rat"
+version = "0.1.0"
+description = "A small self-hosted GitHub release monitor that filters, summarizes, and deduplicates noteworthy releases."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+  { name = "silascroe" }
+]
+keywords = ["github", "releases", "monitoring", "discord", "automation"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Version Control :: Git",
+]
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/silascroe/release-rat"
+Issues = "https://github.com/silascroe/release-rat/issues"
+
+[project.scripts]
+release-rat = "release_rat.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["release_rat*"]
