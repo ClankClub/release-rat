@@ -1,9 +1,9 @@
 <p align="center">
-  <img src="docs/assets/release-rat-banner.svg" alt="Release Rat — GitHub releases in. Signal out." width="100%">
+  <img src="docs/assets/repo-rat-banner.svg" alt="Repo Rat — GitHub releases in. Signal out." width="100%">
 </p>
 
 <p align="center">
-  <a href="https://github.com/ClankClub/release-rat/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/ClankClub/release-rat/ci.yml?branch=main&style=flat-square&label=CI" alt="CI"></a>
+  <a href="https://github.com/ClankClub/repo-rat/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/ClankClub/repo-rat/ci.yml?branch=main&style=flat-square&label=CI" alt="CI"></a>
   <img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.11+">
   <img src="https://img.shields.io/badge/runtime%20dependencies-0-2ea043?style=flat-square" alt="Zero runtime dependencies">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-8b949e?style=flat-square" alt="MIT license"></a>
@@ -11,7 +11,7 @@
 
 <p align="center"><strong>A tiny self-hosted release monitor that filters GitHub release noise down to the stuff worth reading.</strong></p>
 
-Release Rat watches the repositories you care about, remembers what it has already seen, judges whether a new release is actually noteworthy, and reports the useful ones to Discord or a local JSONL log.
+Repo Rat watches the repositories you care about, remembers what it has already seen, judges whether a new release is actually noteworthy, and reports the useful ones to Discord or a local JSONL log.
 
 It is deliberately boring infrastructure: **Python 3.11+, SQLite, the GitHub REST API, and zero runtime third-party Python dependencies.** An OpenAI-compatible model can improve the judgment and summaries, but it is optional; a deterministic heuristic judge is always available.
 
@@ -34,11 +34,11 @@ Clone it, put a few `owner/name` repositories in `config.json`, optionally set a
 public GitHub user's starred-repository source, and run one poll:
 
 ~~~bash
-git clone https://github.com/ClankClub/release-rat.git
-cd release-rat
+git clone https://github.com/ClankClub/repo-rat.git
+cd repo-rat
 
 # edit config.json, then:
-python -m release_rat --once
+python -m repo_rat --once
 ~~~
 
 A minimal configuration can be as small as:
@@ -70,15 +70,15 @@ Or install the checkout locally and use the command directly:
 
 ~~~bash
 python -m pip install .
-release-rat --once
+repo-rat --once
 ~~~
 
-`--once` is the default, so `python -m release_rat` and `release-rat` also perform one normal poll.
+`--once` is the default, so `python -m repo_rat` and `repo-rat` also perform one normal poll.
 
 ## What a report looks like
 
 <p align="center">
-  <img src="docs/assets/report-preview.svg" alt="Illustrative Release Rat report" width="92%">
+  <img src="docs/assets/report-preview.svg" alt="Illustrative Repo Rat report" width="92%">
 </p>
 
 Discord delivery is intentionally plain text rather than a giant bot embed. The wire format is essentially:
@@ -94,12 +94,12 @@ Without a Discord webhook, the same judgment is written to `release-log.jsonl` w
 ## How it works
 
 <p align="center">
-  <img src="docs/assets/pipeline.svg" alt="Release Rat pipeline: GitHub releases, SQLite state, significance judge, Discord or JSONL" width="100%">
+  <img src="docs/assets/pipeline.svg" alt="Repo Rat pipeline: GitHub releases, SQLite state, significance judge, Discord or JSONL" width="100%">
 </p>
 
 The mechanical work stays deterministic. GitHub fetching, first-run seeding, deduplication, retry state, and delivery bookkeeping live in ordinary Python and SQLite. The model—when configured—is used only for the part that benefits from judgment: **is this release interesting, and how should it be summarized?**
 
-If the model is unavailable or not configured, Release Rat falls back to heuristics rather than becoming a very expensive paperweight.
+If the model is unavailable or not configured, Repo Rat falls back to heuristics rather than becoming a very expensive paperweight.
 
 For the internals, release lifecycle, and delivery semantics, see **[docs/architecture.md](docs/architecture.md)**.
 
@@ -107,11 +107,11 @@ For the internals, release lifecycle, and delivery semantics, see **[docs/archit
 
 | Mode | Command | Behavior |
 | --- | --- | --- |
-| One poll | `release-rat --once` | Fetch, judge, report, exit. This is the default. |
-| Watch | `release-rat --watch` | Poll repeatedly using `poll_interval_seconds`. |
-| Backfill | `release-rat --backfill` | Process releases that were silently seeded during the first normal poll. |
+| One poll | `repo-rat --once` | Fetch, judge, report, exit. This is the default. |
+| Watch | `repo-rat --watch` | Poll repeatedly using `poll_interval_seconds`. |
+| Backfill | `repo-rat --backfill` | Process releases that were silently seeded during the first normal poll. |
 
-For unattended Linux use, `examples/` includes a systemd service and timer. On Windows, Task Scheduler can run `python -m release_rat --once` on whatever cadence you want.
+For unattended Linux use, `examples/` includes a systemd service and timer. On Windows, Task Scheduler can run `python -m repo_rat --once` on whatever cadence you want.
 
 ## Configuration
 
@@ -134,13 +134,13 @@ Secrets never belong in `config.json`. They are read from environment variables:
 export GITHUB_TOKEN="..."
 export OPENAI_API_KEY="..."
 export OPENAI_BASE_URL="https://api.openai.com/v1"
-export RELEASE_RAT_MODEL="gpt-5-mini"
+export REPO_RAT_MODEL="gpt-5-mini"
 export DISCORD_WEBHOOK_URL="..."
 ~~~
 
 - `GITHUB_TOKEN` raises GitHub API limits. Public repositories work without it; the included Actions workflow supplies its built-in token automatically.
 - `OPENAI_API_KEY` enables model-assisted significance decisions and summaries.
-- `OPENAI_BASE_URL` and `RELEASE_RAT_MODEL` can point the judge at another OpenAI-compatible endpoint/model.
+- `OPENAI_BASE_URL` and `REPO_RAT_MODEL` can point the judge at another OpenAI-compatible endpoint/model.
 - `DISCORD_WEBHOOK_URL` enables Discord delivery. Without it, reports go to the JSONL log.
 
 The environment-variable names themselves are configurable.
@@ -148,7 +148,7 @@ The environment-variable names themselves are configurable.
 ## GitHub Actions
 
 The repository includes an hourly workflow at
-`.github/workflows/release-rat.yml`. It runs one normal poll, persists
+`.github/workflows/repo-rat.yml`. It runs one normal poll, persists
 `state.db` back to the repository, and supports a manual `workflow_dispatch`
 run with optional backfill. Add `DISCORD_WEBHOOK_URL` as an Actions secret to
 enable Discord delivery. `OPENAI_API_KEY` is optional; without it, the
@@ -156,7 +156,7 @@ deterministic judge still works.
 
 The tracked `config.json` intentionally monitors nobody by default. To use
 the starred-repositories source in GitHub Actions, add the repository Actions
-variable `RELEASE_RAT_STARRED_USERNAME` with your GitHub username. It is not a
+variable `REPO_RAT_STARRED_USERNAME` with your GitHub username. It is not a
 secret; the workflow writes it into a temporary runner-only config file. For
 local use, set `starred_username` in your own `config.json` directly.
 
@@ -170,20 +170,20 @@ fresh local baseline.
 The first successful **normal** poll for each repository records the releases already present and marks them as seeded. Nothing is reported.
 
 ~~~bash
-release-rat --once
+repo-rat --once
 ~~~
 
 After that baseline exists, normal polls process only newly discovered releases. If you explicitly want the seeded history:
 
 ~~~bash
-release-rat --backfill
+repo-rat --backfill
 ~~~
 
 This behavior is deliberate. A release monitor should not punish you for installing it.
 
 ## Reliability, deliberately
 
-Release Rat is small, but it takes state seriously:
+Repo Rat is small, but it takes state seriously:
 
 - Judgments are persisted before delivery, so a webhook failure does not force another model call.
 - Failed judgments remain retryable.

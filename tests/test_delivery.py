@@ -3,9 +3,9 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from release_rat.delivery import DeliveryRouter
-from release_rat.models import Judgment
-from release_rat.state import StoredRelease
+from repo_rat.delivery import DeliveryRouter
+from repo_rat.models import Judgment
+from repo_rat.state import StoredRelease
 
 
 def make_release(**overrides):

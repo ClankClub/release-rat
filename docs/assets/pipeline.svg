@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-labelledby="title desc">
-  <title id="title">Release Rat processing pipeline</title>
+  <title id="title">Repo Rat processing pipeline</title>
   <desc id="desc">GitHub releases flow through SQLite state, a significance judge, and finally to Discord or a local JSONL log.</desc>
   <defs>
     <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">

@@ -2,13 +2,13 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from release_rat.config import AppConfig, LLMConfig
-from release_rat.delivery import DeliveryResult
-from release_rat.github import GitHubError
-from release_rat.judgment import JudgmentError
-from release_rat.models import Judgment, Release
-from release_rat.runner import ReleaseRat
-from release_rat.state import StateStore
+from repo_rat.config import AppConfig, LLMConfig
+from repo_rat.delivery import DeliveryResult
+from repo_rat.github import GitHubError
+from repo_rat.judgment import JudgmentError
+from repo_rat.models import Judgment, Release
+from repo_rat.runner import RepoRat
+from repo_rat.state import StateStore
 
 
 def make_release(**overrides):
@@ -39,7 +39,7 @@ def make_config(repositories, state_path, starred_username=None):
             enabled=False,
             base_url_env="OPENAI_BASE_URL",
             api_key_env="OPENAI_API_KEY",
-            model_env="RELEASE_RAT_MODEL",
+            model_env="REPO_RAT_MODEL",
             default_base_url="https://api.openai.com/v1",
             default_model="gpt-5-mini",
         ),
@@ -134,7 +134,7 @@ class RunnerTests(unittest.TestCase):
     def make_rat(self, initial_releases, repositories=("acme/tool",)):
         self.github.releases_by_repository = {repository: [] for repository in repositories}
         self.github.releases_by_repository["acme/tool"] = initial_releases
-        return ReleaseRat(
+        return RepoRat(
             make_config(repositories, self.state.path),
             self.github,
             self.state,
@@ -165,7 +165,7 @@ class RunnerTests(unittest.TestCase):
         self.judge.judgments[release.release_id] = Judgment(
             True, "Feature", "new feature"
         )
-        rat = ReleaseRat(
+        rat = RepoRat(
             make_config(("acme/tool",), self.state.path, "silascroe"),
             self.github,
             self.state,
@@ -183,7 +183,7 @@ class RunnerTests(unittest.TestCase):
 
     def test_starred_source_failure_is_reported_without_dropping_static_repositories(self):
         self.github.starred_error = GitHubError("star list unavailable")
-        rat = ReleaseRat(
+        rat = RepoRat(
             make_config(("acme/tool",), self.state.path, "silascroe"),
             self.github,
             self.state,
@@ -201,7 +201,7 @@ class RunnerTests(unittest.TestCase):
         release = make_release(release_id="2", body="Breaking change")
         self.judge.judgments[release.release_id] = Judgment(True, "Breaking change", "breaking")
         self.github.releases_by_repository = {"acme/tool": []}
-        rat = ReleaseRat(
+        rat = RepoRat(
             make_config(("acme/tool",), self.state.path),
             self.github,
             self.state,
@@ -218,7 +218,7 @@ class RunnerTests(unittest.TestCase):
 
     def test_empty_normal_poll_persists_a_baseline_for_the_next_process(self):
         self.github.releases_by_repository = {"acme/tool": []}
-        first_rat = ReleaseRat(
+        first_rat = RepoRat(
             make_config(("acme/tool",), self.state.path),
             self.github,
             self.state,
@@ -235,7 +235,7 @@ class RunnerTests(unittest.TestCase):
             True, "Security fix", "security"
         )
         self.github.releases_by_repository["acme/tool"] = [release]
-        second_rat = ReleaseRat(
+        second_rat = RepoRat(
             make_config(("acme/tool",), self.state.path),
             self.github,
             reopened_state,
@@ -261,7 +261,7 @@ class RunnerTests(unittest.TestCase):
 
     def test_delivery_failure_preserves_judgment_retries_and_finishes_run(self):
         self.github.releases_by_repository = {"acme/tool": []}
-        baseline_rat = ReleaseRat(
+        baseline_rat = RepoRat(
             make_config(("acme/tool",), self.state.path),
             self.github,
             self.state,
@@ -275,7 +275,7 @@ class RunnerTests(unittest.TestCase):
         )
         self.github.releases_by_repository["acme/tool"] = [release]
         delivery = FailOnceDelivery(self.state)
-        rat = ReleaseRat(
+        rat = RepoRat(
             make_config(("acme/tool",), self.state.path),
             self.github,
             self.state,
@@ -310,7 +310,7 @@ class RunnerTests(unittest.TestCase):
         release = make_release(release_id="4", body="Documentation update")
         self.judge.judgments[release.release_id] = Judgment(False, "Docs", "routine")
         self.github.releases_by_repository = {"acme/tool": []}
-        rat = ReleaseRat(
+        rat = RepoRat(
             make_config(("acme/tool",), self.state.path),
             self.github,
             self.state,
@@ -340,7 +340,7 @@ class RunnerTests(unittest.TestCase):
             "acme/broken": GitHubError("unavailable"),
             "acme/healthy": [],
         }
-        rat = ReleaseRat(
+        rat = RepoRat(
             make_config(("acme/broken", "acme/healthy"), self.state.path),
             self.github,
             self.state,

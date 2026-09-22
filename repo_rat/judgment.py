@@ -142,7 +142,7 @@ class OpenAICompatibleJudge:
             headers={
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
-                "User-Agent": "release-rat",
+                "User-Agent": "repo-rat",
             },
             method="POST",
         )

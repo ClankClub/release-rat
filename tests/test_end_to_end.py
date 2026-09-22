@@ -3,12 +3,12 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from release_rat.config import load_config
-from release_rat.delivery import DeliveryRouter
-from release_rat.judgment import HeuristicJudge
-from release_rat.models import Release
-from release_rat.runner import ReleaseRat
-from release_rat.state import StateStore
+from repo_rat.config import load_config
+from repo_rat.delivery import DeliveryRouter
+from repo_rat.judgment import HeuristicJudge
+from repo_rat.models import Release
+from repo_rat.runner import RepoRat
+from repo_rat.state import StateStore
 
 
 class SequencedGitHub:
@@ -63,7 +63,7 @@ class EndToEndTests(unittest.TestCase):
             config = load_config(config_path)
 
             with StateStore(config.state_path) as state:
-                rat = ReleaseRat(
+                rat = RepoRat(
                     config,
                     github,
                     state,

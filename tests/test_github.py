@@ -2,7 +2,7 @@ import json
 import unittest
 from urllib.error import HTTPError
 
-from release_rat.github import GitHubClient, GitHubError
+from repo_rat.github import GitHubClient, GitHubError
 
 
 class FakeResponse:
@@ -105,7 +105,7 @@ class GitHubClientTests(unittest.TestCase):
         self.assertEqual(
             opener.requests[0].headers["X-github-api-version"], "2022-11-28"
         )
-        self.assertEqual(opener.requests[0].headers["User-agent"], "release-rat")
+        self.assertEqual(opener.requests[0].headers["User-agent"], "repo-rat")
         self.assertNotIn("Authorization", opener.requests[0].headers)
 
     def test_token_is_sent_as_bearer_header(self):

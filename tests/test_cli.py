@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from release_rat.cli import main, parse_args
+from repo_rat.cli import main, parse_args
 
 
 class CommandLineTests(unittest.TestCase):

@@ -104,7 +104,7 @@ class GitHubClient:
             headers={
                 "Accept": "application/vnd.github+json",
                 "X-GitHub-Api-Version": _API_VERSION,
-                "User-Agent": "release-rat",
+                "User-Agent": "repo-rat",
             },
         )
         if self._token:

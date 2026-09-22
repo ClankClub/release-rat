@@ -1,5 +1,5 @@
 [Unit]
-Description=Run Release Rat hourly
+Description=Run Repo Rat hourly
 
 [Timer]
 OnCalendar=hourly

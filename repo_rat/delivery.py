@@ -70,7 +70,7 @@ class DeliveryRouter:
             data=json.dumps(payload).encode("utf-8"),
             headers={
                 "Content-Type": "application/json",
-                "User-Agent": "release-rat",
+                "User-Agent": "repo-rat",
             },
             method="POST",
         )

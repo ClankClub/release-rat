@@ -6,7 +6,7 @@ from typing import Any
 
 
 class ConfigError(ValueError):
-    """Raised when the Release Rat configuration is invalid."""
+    """Raised when the Repo Rat configuration is invalid."""
 
 
 @dataclass(frozen=True)
@@ -48,7 +48,7 @@ _LLM_DEFAULTS = {
     "enabled": True,
     "base_url_env": "OPENAI_BASE_URL",
     "api_key_env": "OPENAI_API_KEY",
-    "model_env": "RELEASE_RAT_MODEL",
+    "model_env": "REPO_RAT_MODEL",
     "default_base_url": "https://api.openai.com/v1",
     "default_model": "gpt-5-mini",
 }

@@ -13,12 +13,12 @@ class PublicSetupTests(unittest.TestCase):
         self.assertIsNone(config["starred_username"])
 
     def test_actions_workflow_reads_starred_username_from_a_repository_variable(self):
-        workflow = (ROOT / ".github/workflows/release-rat.yml").read_text(
+        workflow = (ROOT / ".github/workflows/repo-rat.yml").read_text(
             encoding="utf-8"
         )
 
-        self.assertIn("vars.RELEASE_RAT_STARRED_USERNAME", workflow)
-        self.assertIn("--config \"$RUNNER_TEMP/release-rat.json\"", workflow)
+        self.assertIn("vars.REPO_RAT_STARRED_USERNAME", workflow)
+        self.assertIn("--config \"$RUNNER_TEMP/repo-rat.json\"", workflow)
 
 
 if __name__ == "__main__":

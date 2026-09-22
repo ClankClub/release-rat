@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "release-rat"
+name = "repo-rat"
 version = "0.1.0"
 description = "A small self-hosted GitHub release monitor that filters, summarizes, and deduplicates noteworthy releases."
 readme = "README.md"
@@ -27,12 +27,12 @@ classifiers = [
 dependencies = []
 
 [project.urls]
-Repository = "https://github.com/ClankClub/release-rat"
-Issues = "https://github.com/ClankClub/release-rat/issues"
+Repository = "https://github.com/ClankClub/repo-rat"
+Issues = "https://github.com/ClankClub/repo-rat/issues"
 
 [project.scripts]
-release-rat = "release_rat.cli:main"
+repo-rat = "repo_rat.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["release_rat*"]
+include = ["repo_rat*"]

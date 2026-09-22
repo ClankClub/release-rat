@@ -5,8 +5,8 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from release_rat.config import ConfigError, load_config
-from release_rat.models import Judgment, Release
+from repo_rat.config import ConfigError, load_config
+from repo_rat.models import Judgment, Release
 
 
 class LoadConfigTests(unittest.TestCase):
@@ -48,7 +48,7 @@ class LoadConfigTests(unittest.TestCase):
         self.assertFalse(config.llm.enabled)
         self.assertEqual(config.llm.base_url_env, "OPENAI_BASE_URL")
         self.assertEqual(config.llm.api_key_env, "OPENAI_API_KEY")
-        self.assertEqual(config.llm.model_env, "RELEASE_RAT_MODEL")
+        self.assertEqual(config.llm.model_env, "REPO_RAT_MODEL")
         self.assertEqual(config.llm.default_base_url, "https://api.openai.com/v1")
         self.assertEqual(config.llm.default_model, "gpt-5-mini")
 

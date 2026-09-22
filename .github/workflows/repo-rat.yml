@@ -1,4 +1,4 @@
-name: Release Rat
+name: Repo Rat
 
 on:
   schedule:
@@ -15,7 +15,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: release-rat
+  group: repo-rat
   cancel-in-progress: false
 
 jobs:
@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Check out Release Rat
+      - name: Check out Repo Rat
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -31,7 +31,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install Release Rat
+      - name: Install Repo Rat
         run: python -m pip install .
 
       - name: Poll configured repositories
@@ -39,9 +39,9 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          RELEASE_RAT_STARRED_USERNAME: ${{ vars.RELEASE_RAT_STARRED_USERNAME }}
+          REPO_RAT_STARRED_USERNAME: ${{ vars.REPO_RAT_STARRED_USERNAME }}
         run: |
-          python - "$RUNNER_TEMP/release-rat.json" <<'PY'
+          python - "$RUNNER_TEMP/repo-rat.json" <<'PY'
           import json
           import os
           import sys
@@ -49,7 +49,7 @@ jobs:
           with open("config.json", encoding="utf-8") as source:
               config = json.load(source)
 
-          starred_username = os.environ.get("RELEASE_RAT_STARRED_USERNAME", "").strip()
+          starred_username = os.environ.get("REPO_RAT_STARRED_USERNAME", "").strip()
           if starred_username:
               config["starred_username"] = starred_username
 
@@ -59,9 +59,9 @@ jobs:
           PY
 
           if [[ "${{ inputs.backfill }}" == "true" ]]; then
-            python -m release_rat --config "$RUNNER_TEMP/release-rat.json" --backfill
+            python -m repo_rat --config "$RUNNER_TEMP/repo-rat.json" --backfill
           else
-            python -m release_rat --config "$RUNNER_TEMP/release-rat.json" --once
+            python -m repo_rat --config "$RUNNER_TEMP/repo-rat.json" --once
           fi
 
       - name: Persist state database
@@ -72,8 +72,8 @@ jobs:
             exit 0
           fi
 
-          git config user.name "release-rat[bot]"
-          git config user.email "release-rat[bot]@users.noreply.github.com"
+          git config user.name "repo-rat[bot]"
+          git config user.email "repo-rat[bot]@users.noreply.github.com"
           git add -f state.db
 
           if git diff --cached --quiet -- state.db; then
@@ -81,5 +81,5 @@ jobs:
             exit 0
           fi
 
-          git commit -m "chore: update release rat state"
+          git commit -m "chore: update repo rat state"
           git push

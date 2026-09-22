@@ -2,8 +2,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from release_rat.models import Judgment, Release
-from release_rat.state import StateStore
+from repo_rat.models import Judgment, Release
+from repo_rat.state import StateStore
 
 
 def make_release(release_id="101", published_at="2026-09-19T12:00:00+00:00"):

@@ -1,20 +1,20 @@
 # Architecture
 
-Release Rat is intentionally small: deterministic polling and persistence do the mechanical work, while an optional language-model call handles the one part that benefits from judgment.
+Repo Rat is intentionally small: deterministic polling and persistence do the mechanical work, while an optional language-model call handles the one part that benefits from judgment.
 
-![Release Rat pipeline](assets/pipeline.svg)
+![Repo Rat pipeline](assets/pipeline.svg)
 
 The design rule is simple: **state and delivery should remain reliable even when the clever part fails.** The model is therefore an optional collaborator, not a structural dependency.
 
 ## Components
 
-- `release_rat/config.py` loads and validates JSON configuration and environment-variable names.
-- `release_rat/github.py` fetches releases and optional public starred-repository lists from GitHub using only the Python standard library, with optional token authentication and pagination.
-- `release_rat/state.py` owns SQLite persistence, release lifecycle state, run history, delivery recovery, and the cross-process poll lock.
-- `release_rat/judgment.py` provides an OpenAI-compatible JSON judge plus a deterministic heuristic fallback.
-- `release_rat/delivery.py` posts compact Discord messages or appends structured JSON Lines locally.
-- `release_rat/runner.py` resolves the explicit repository list plus any configured starred source, then coordinates polling, first-run seeding, backfill, judgment, persistence, and delivery.
-- `release_rat/cli.py` exposes one-shot, watch, and backfill modes.
+- `repo_rat/config.py` loads and validates JSON configuration and environment-variable names.
+- `repo_rat/github.py` fetches releases and optional public starred-repository lists from GitHub using only the Python standard library, with optional token authentication and pagination.
+- `repo_rat/state.py` owns SQLite persistence, release lifecycle state, run history, delivery recovery, and the cross-process poll lock.
+- `repo_rat/judgment.py` provides an OpenAI-compatible JSON judge plus a deterministic heuristic fallback.
+- `repo_rat/delivery.py` posts compact Discord messages or appends structured JSON Lines locally.
+- `repo_rat/runner.py` resolves the explicit repository list plus any configured starred source, then coordinates polling, first-run seeding, backfill, judgment, persistence, and delivery.
+- `repo_rat/cli.py` exposes one-shot, watch, and backfill modes.
 
 ## Release lifecycle
 
@@ -34,7 +34,7 @@ an error without silently treating the account as having no stars.
 
 ## Delivery semantics
 
-Release Rat aims to report each release once and protects against duplicate work from overlapping local processes with a SQLite-backed poll lock. Judgments are persisted before delivery, so an interruption after judgment does not require the release to be judged again.
+Repo Rat aims to report each release once and protects against duplicate work from overlapping local processes with a SQLite-backed poll lock. Judgments are persisted before delivery, so an interruption after judgment does not require the release to be judged again.
 
 There is one unavoidable edge case: if Discord accepts a webhook and the process crashes before the local delivery marker commits, recovery can post the same report again. Exactly-once delivery across an external webhook cannot be guaranteed without cooperation from the remote endpoint.
 

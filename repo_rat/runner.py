@@ -1,4 +1,4 @@
-"""Polling coordinator for Release Rat's release-processing pipeline."""
+"""Polling coordinator for Repo Rat's release-processing pipeline."""
 
 from dataclasses import dataclass
 
@@ -21,7 +21,7 @@ class RunSummary:
     repository_errors: int = 0
 
 
-class ReleaseRat:
+class RepoRat:
     """Coordinate release polling without owning HTTP or persistence details."""
 
     def __init__(

@@ -1,0 +1,8 @@
+[Unit]
+Description=Repo Rat GitHub release monitor
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/repo-rat
+EnvironmentFile=-/etc/repo-rat.env
+ExecStart=/opt/repo-rat/.venv/bin/python -m repo_rat --once

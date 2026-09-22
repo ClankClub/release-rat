@@ -1,6 +1,6 @@
 """Immutable domain values exchanged by the release pipeline.
 
-Persistent lifecycle metadata belongs to :mod:`release_rat.state`, rather
+Persistent lifecycle metadata belongs to :mod:`repo_rat.state`, rather
 than these domain input and judgment models.
 """
 

@@ -10,14 +10,14 @@ from dataclasses import replace
 from pathlib import Path
 from unittest import mock
 
-from release_rat.delivery import DeliveryRouter
-from release_rat.github import GitHubClient, GitHubError
-from release_rat.judgment import (
+from repo_rat.delivery import DeliveryRouter
+from repo_rat.github import GitHubClient, GitHubError
+from repo_rat.judgment import (
     FallbackJudge, HeuristicJudge, JudgmentError, OpenAICompatibleJudge,
 )
-from release_rat.models import Judgment
-from release_rat.runner import ReleaseRat
-from release_rat.state import StateStore
+from repo_rat.models import Judgment
+from repo_rat.runner import RepoRat
+from repo_rat.state import StateStore
 from test_judgment import FakeTransport, llm_config
 from test_runner import FakeGitHub, FakeJudge, make_config, make_release
 
@@ -38,7 +38,7 @@ def held_poll(db_path, pipe):
     try:
         with StateStore(Path(db_path)) as state:
             config = make_config(("acme/tool",), state.path)
-            rat = ReleaseRat(
+            rat = RepoRat(
                 config, FakeGitHub({"acme/tool": [make_release()]}), state,
                 HeldJudge(), DeliveryRouter(None, config.local_log_path),
             )
@@ -57,7 +57,7 @@ class RecoveryAndConcurrencyTests(unittest.TestCase):
         self.judge = FakeJudge({"1": APPROVED})
 
     def rat(self, state, delivery=None):
-        return ReleaseRat(
+        return RepoRat(
             self.config, self.github, state, self.judge,
             delivery or DeliveryRouter(None, self.config.local_log_path),
         )

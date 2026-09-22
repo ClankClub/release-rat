@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
-  <title id="title">Illustrative Release Rat report</title>
-  <desc id="desc">An example of the compact text notification Release Rat can send.</desc>
+  <title id="title">Illustrative Repo Rat report</title>
+  <desc id="desc">An example of the compact text notification Repo Rat can send.</desc>
   <rect width="1200" height="360" rx="24" fill="#0d1117"/>
   <rect x="50" y="38" width="1100" height="284" rx="18" fill="#161b22" stroke="#30363d" stroke-width="2"/>
   <rect x="50" y="38" width="7" height="284" rx="3.5" fill="#d29922"/>

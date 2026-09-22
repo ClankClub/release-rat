@@ -2,9 +2,9 @@ import json
 import unittest
 from unittest import mock
 
-from release_rat.config import LLMConfig
-from release_rat.judgment import FallbackJudge, HeuristicJudge, OpenAICompatibleJudge
-from release_rat.models import Release
+from repo_rat.config import LLMConfig
+from repo_rat.judgment import FallbackJudge, HeuristicJudge, OpenAICompatibleJudge
+from repo_rat.models import Release
 
 
 def make_release(**overrides):
