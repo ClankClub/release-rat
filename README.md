@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/silascroe/release-rat/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/silascroe/release-rat/ci.yml?branch=main&style=flat-square&label=CI" alt="CI"></a>
+  <a href="https://github.com/ClankClub/release-rat/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/ClankClub/release-rat/ci.yml?branch=main&style=flat-square&label=CI" alt="CI"></a>
   <img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.11+">
   <img src="https://img.shields.io/badge/runtime%20dependencies-0-2ea043?style=flat-square" alt="Zero runtime dependencies">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-8b949e?style=flat-square" alt="MIT license"></a>
@@ -30,10 +30,11 @@ The first normal poll quietly establishes a baseline, so adding a repository wit
 
 ## Quick start
 
-Clone it, put a few `owner/name` repositories in `config.json`, and run one poll:
+Clone it, put a few `owner/name` repositories in `config.json`, optionally set a
+public GitHub user's starred-repository source, and run one poll:
 
 ~~~bash
-git clone https://github.com/silascroe/release-rat.git
+git clone https://github.com/ClankClub/release-rat.git
 cd release-rat
 
 # edit config.json, then:
@@ -44,9 +45,26 @@ A minimal configuration can be as small as:
 
 ~~~json
 {
-  "repositories": ["python/cpython", "astral-sh/uv"]
+  "repositories": ["python/cpython", "astral-sh/uv"],
+  "starred_username": null
 }
 ~~~
+
+To monitor every public repository starred by a GitHub user, set
+`starred_username` instead of (or alongside) the explicit list:
+
+~~~json
+{
+  "repositories": [],
+  "starred_username": "silascroe"
+}
+~~~
+
+The starred source is public-only, paginated, deduplicated with the explicit
+list, and optional. A repository newly discovered through stars is quietly
+seeded during its first normal poll, so enabling it does not replay years of
+old releases. Unstarring a repository stops future checks but does not erase
+its remembered release history.
 
 Or install the checkout locally and use the command directly:
 
@@ -102,6 +120,7 @@ The checked-in `config.json` shows every available setting. The useful knobs are
 | Setting | Default | Purpose |
 | --- | --- | --- |
 | `repositories` | `[]` | GitHub repositories as `owner/name`. |
+| `starred_username` | `null` | Also monitor every public repository starred by this GitHub username. |
 | `poll_interval_seconds` | `3600` | Delay between polls in `--watch` mode. |
 | `include_prereleases` | `false` | Include prereleases in addition to stable releases. |
 | `bootstrap_mode` | `"seed"` | Establish the first-run baseline without notifying old releases. |
@@ -119,12 +138,21 @@ export RELEASE_RAT_MODEL="gpt-5-mini"
 export DISCORD_WEBHOOK_URL="..."
 ~~~
 
-- `GITHUB_TOKEN` raises GitHub API limits. Public repositories work without it.
+- `GITHUB_TOKEN` raises GitHub API limits. Public repositories work without it; the included Actions workflow supplies its built-in token automatically.
 - `OPENAI_API_KEY` enables model-assisted significance decisions and summaries.
 - `OPENAI_BASE_URL` and `RELEASE_RAT_MODEL` can point the judge at another OpenAI-compatible endpoint/model.
 - `DISCORD_WEBHOOK_URL` enables Discord delivery. Without it, reports go to the JSONL log.
 
 The environment-variable names themselves are configurable.
+
+## GitHub Actions
+
+The repository includes an hourly workflow at
+`.github/workflows/release-rat.yml`. It runs one normal poll, persists
+`state.db` back to the repository, and supports a manual `workflow_dispatch`
+run with optional backfill. Add `DISCORD_WEBHOOK_URL` as an Actions secret to
+enable Discord delivery. `OPENAI_API_KEY` is optional; without it, the
+deterministic judge still works.
 
 ## First run, without the notification apocalypse
 

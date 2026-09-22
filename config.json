@@ -1,5 +1,6 @@
 {
   "repositories": [],
+  "starred_username": "silascroe",
   "poll_interval_seconds": 3600,
   "include_prereleases": false,
   "bootstrap_mode": "seed",

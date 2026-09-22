@@ -37,6 +37,37 @@ def json_response(payload):
 
 
 class GitHubClientTests(unittest.TestCase):
+    def test_fetch_public_starred_repositories_paginates_and_filters_private(self):
+        first_page = [
+            {"full_name": f"owner/repo-{index}", "private": False}
+            for index in range(99)
+        ]
+        first_page.append({"full_name": "owner/private", "private": True})
+        opener = FakeOpener(
+            [
+                json_response(first_page),
+                json_response([{"full_name": "owner/last", "private": False}]),
+            ]
+        )
+
+        repositories = GitHubClient(opener=opener).fetch_public_starred_repositories(
+            "silascroe"
+        )
+
+        self.assertEqual(len(repositories), 100)
+        self.assertNotIn("owner/private", repositories)
+        self.assertEqual(repositories[-1], "owner/last")
+        self.assertIn("/users/silascroe/starred?per_page=100&page=1", opener.requests[0].full_url)
+        self.assertIn("/users/silascroe/starred?per_page=100&page=2", opener.requests[1].full_url)
+
+    def test_rejects_invalid_starred_username_before_request(self):
+        opener = FakeOpener([])
+
+        with self.assertRaises(GitHubError):
+            GitHubClient(opener=opener).fetch_public_starred_repositories("not a user")
+
+        self.assertEqual(opener.requests, [])
+
     def test_fetch_releases_converts_payload_and_filters_prereleases(self):
         opener = FakeOpener(
             [

@@ -25,7 +25,7 @@ def make_release(**overrides):
     return Release(**values)
 
 
-def make_config(repositories, state_path):
+def make_config(repositories, state_path, starred_username=None):
     return AppConfig(
         repositories=tuple(repositories),
         poll_interval_seconds=3600,
@@ -43,18 +43,30 @@ def make_config(repositories, state_path):
             default_base_url="https://api.openai.com/v1",
             default_model="gpt-5-mini",
         ),
+        starred_username=starred_username,
     )
 
 
 class FakeGitHub:
     def __init__(self, releases_by_repository):
         self.releases_by_repository = releases_by_repository
+        self.public_starred = []
+        self.starred_calls = []
+        self.release_calls = []
+        self.starred_error = None
 
     def fetch_releases(self, repository, include_prereleases):
+        self.release_calls.append(repository)
         result = self.releases_by_repository[repository]
         if isinstance(result, Exception):
             raise result
         return result
+
+    def fetch_public_starred_repositories(self, username):
+        self.starred_calls.append(username)
+        if self.starred_error is not None:
+            raise self.starred_error
+        return list(self.public_starred)
 
 
 class FakeJudge:
@@ -140,6 +152,50 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(summary.reported, 0)
         self.assertEqual(summary.seeded, 1)
         self.assertEqual(self.delivery.calls, [])
+
+    def test_public_starred_repositories_are_added_and_seeded(self):
+        release = make_release(
+            repository="starred/project", release_id="starred-1", body="New feature"
+        )
+        self.github.releases_by_repository = {
+            "acme/tool": [],
+            "starred/project": [release],
+        }
+        self.github.public_starred = ["acme/tool", "starred/project"]
+        self.judge.judgments[release.release_id] = Judgment(
+            True, "Feature", "new feature"
+        )
+        rat = ReleaseRat(
+            make_config(("acme/tool",), self.state.path, "silascroe"),
+            self.github,
+            self.state,
+            self.judge,
+            self.delivery,
+        )
+
+        summary = rat.poll("normal")
+
+        self.assertEqual(self.github.starred_calls, ["silascroe"])
+        self.assertEqual(self.github.release_calls.count("acme/tool"), 1)
+        self.assertEqual(summary.seeded, 1)
+        self.assertEqual(summary.reported, 0)
+        self.assertEqual(self.delivery.calls, [])
+
+    def test_starred_source_failure_is_reported_without_dropping_static_repositories(self):
+        self.github.starred_error = GitHubError("star list unavailable")
+        rat = ReleaseRat(
+            make_config(("acme/tool",), self.state.path, "silascroe"),
+            self.github,
+            self.state,
+            self.judge,
+            self.delivery,
+        )
+
+        summary = rat.poll("normal")
+
+        self.assertEqual(self.github.release_calls, ["acme/tool"])
+        self.assertEqual(summary.errors, 1)
+        self.assertEqual(summary.repository_errors, 1)
 
     def test_new_release_is_reported_once_across_two_polls(self):
         release = make_release(release_id="2", body="Breaking change")

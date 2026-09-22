@@ -30,9 +30,11 @@ class AppConfig:
     discord_webhook_env: str
     github_token_env: str
     llm: LLMConfig
+    starred_username: str | None = None
 
 
 _REPOSITORY = re.compile(r"^[^/\s]+/[^/\s]+$")
+_USERNAME = re.compile(r"^[A-Za-z0-9-]+$")
 _DEFAULTS = {
     "poll_interval_seconds": 3600,
     "include_prereleases": False,
@@ -88,6 +90,12 @@ def load_config(path: Path) -> AppConfig:
             normalized_repositories.append(repository)
             seen.add(repository)
 
+    starred_username = raw.get("starred_username")
+    if starred_username is not None:
+        starred_username = _string(starred_username, "starred_username")
+        if not _USERNAME.fullmatch(starred_username):
+            raise ConfigError("starred_username must be a GitHub username")
+
     interval = raw.get("poll_interval_seconds", _DEFAULTS["poll_interval_seconds"])
     if isinstance(interval, bool) or not isinstance(interval, int) or interval <= 0:
         raise ConfigError("poll_interval_seconds must be a positive integer")
@@ -141,4 +149,5 @@ def load_config(path: Path) -> AppConfig:
             "github_token_env",
         ),
         llm=llm,
+        starred_username=starred_username,
     )

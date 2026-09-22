@@ -9,11 +9,11 @@ The design rule is simple: **state and delivery should remain reliable even when
 ## Components
 
 - `release_rat/config.py` loads and validates JSON configuration and environment-variable names.
-- `release_rat/github.py` fetches releases from GitHub using only the Python standard library, with optional token authentication and pagination.
+- `release_rat/github.py` fetches releases and optional public starred-repository lists from GitHub using only the Python standard library, with optional token authentication and pagination.
 - `release_rat/state.py` owns SQLite persistence, release lifecycle state, run history, delivery recovery, and the cross-process poll lock.
 - `release_rat/judgment.py` provides an OpenAI-compatible JSON judge plus a deterministic heuristic fallback.
 - `release_rat/delivery.py` posts compact Discord messages or appends structured JSON Lines locally.
-- `release_rat/runner.py` coordinates polling, first-run seeding, backfill, judgment, persistence, and delivery.
+- `release_rat/runner.py` resolves the explicit repository list plus any configured starred source, then coordinates polling, first-run seeding, backfill, judgment, persistence, and delivery.
 - `release_rat/cli.py` exposes one-shot, watch, and backfill modes.
 
 ## Release lifecycle
@@ -27,6 +27,10 @@ GitHub's numeric release ID is used as the stable identity when available. New r
 5. **failed** — judgment failed and remains eligible for retry.
 
 `--backfill` includes seeded releases; normal polls do not.
+
+When `starred_username` is configured, public starred repositories are added to
+the explicit list before polling. A failure to fetch that source is recorded as
+an error without silently treating the account as having no stars.
 
 ## Delivery semantics
 

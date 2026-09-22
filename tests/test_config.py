@@ -56,11 +56,31 @@ class LoadConfigTests(unittest.TestCase):
         config = load_config(self.write_config({"repositories": []}))
 
         self.assertEqual(config.repositories, ())
+        self.assertIsNone(config.starred_username)
         self.assertEqual(config.poll_interval_seconds, 3600)
         self.assertFalse(config.include_prereleases)
         self.assertEqual(config.bootstrap_mode, "seed")
         self.assertEqual(config.state_path, self.directory / "nested/state.db")
         self.assertEqual(config.local_log_path, self.directory / "nested/release-log.jsonl")
+
+    def test_loads_optional_public_starred_username(self):
+        config = load_config(
+            self.write_config(
+                {"repositories": [], "starred_username": "silascroe"}
+            )
+        )
+
+        self.assertEqual(config.starred_username, "silascroe")
+
+    def test_rejects_invalid_public_starred_username(self):
+        for username in ("", "silas croe", "owner/repo", 42):
+            with self.subTest(username=username):
+                with self.assertRaises(ConfigError):
+                    load_config(
+                        self.write_config(
+                            {"repositories": [], "starred_username": username}
+                        )
+                    )
 
     def test_duplicate_repositories_are_normalized_once_in_order(self):
         config = load_config(

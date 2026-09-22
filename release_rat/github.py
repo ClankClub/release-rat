@@ -15,6 +15,7 @@ class GitHubError(RuntimeError):
 
 
 _REPOSITORY = re.compile(r"^[^/\s]+/[^/\s]+$")
+_USERNAME = re.compile(r"^[A-Za-z0-9-]+$")
 _API_URL = "https://api.github.com"
 _API_VERSION = "2022-11-28"
 _PAGE_SIZE = 100
@@ -58,8 +59,46 @@ class GitHubClient:
 
         return releases
 
+    def fetch_public_starred_repositories(self, username: str) -> list[str]:
+        """Return the public repositories starred by a GitHub user."""
+        if not isinstance(username, str) or not _USERNAME.fullmatch(username):
+            raise GitHubError(f"invalid GitHub username: {username!r}")
+
+        repositories = []
+        seen = set()
+        page = 1
+        while True:
+            payload = self._fetch_starred_page(username, page)
+            if not isinstance(payload, list):
+                raise GitHubError("GitHub starred repositories response must be a JSON list")
+
+            for item in payload:
+                if not isinstance(item, dict) or item.get("private", False):
+                    continue
+                repository = item.get("full_name")
+                if (
+                    isinstance(repository, str)
+                    and _REPOSITORY.fullmatch(repository)
+                    and repository not in seen
+                ):
+                    repositories.append(repository)
+                    seen.add(repository)
+
+            if len(payload) < _PAGE_SIZE:
+                break
+            page += 1
+
+        return repositories
+
     def _fetch_page(self, repository: str, page: int) -> Any:
         url = f"{_API_URL}/repos/{repository}/releases?per_page={_PAGE_SIZE}&page={page}"
+        return self._fetch_json(url)
+
+    def _fetch_starred_page(self, username: str, page: int) -> Any:
+        url = f"{_API_URL}/users/{username}/starred?per_page={_PAGE_SIZE}&page={page}"
+        return self._fetch_json(url)
+
+    def _fetch_json(self, url: str) -> Any:
         request = urllib.request.Request(
             url,
             headers={

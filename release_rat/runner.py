@@ -61,7 +61,24 @@ class ReleaseRat:
         errors = []
         run_id = self._state.start_run(mode)
         try:
-            for repository in self._config.repositories:
+            repositories = list(self._config.repositories)
+            if self._config.starred_username:
+                try:
+                    starred_repositories = self._github.fetch_public_starred_repositories(
+                        self._config.starred_username
+                    )
+                except GitHubError as exc:
+                    counts["errors"] += 1
+                    counts["repository_errors"] += 1
+                    errors.append(
+                        f"starred repositories for {self._config.starred_username}: {exc}"
+                    )
+                else:
+                    for repository in starred_repositories:
+                        if repository not in repositories:
+                            repositories.append(repository)
+
+            for repository in repositories:
                 had_state = bool(
                     self._state.get_releases(repository)
                     or self._state.is_repository_initialized(repository)
