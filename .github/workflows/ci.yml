@@ -24,4 +24,16 @@ jobs:
       - name: Run tests
         run: python -m unittest discover -s tests -v
       - name: Smoke test CLI
-        run: release-rat --config config.json
+        run: |
+          cat > "$RUNNER_TEMP/release-rat-ci.json" <<'EOF'
+          {
+            "repositories": [],
+            "starred_username": null,
+            "llm": {
+              "enabled": false
+            },
+            "state_path": "state.db",
+            "local_log_path": "release-log.jsonl"
+          }
+          EOF
+          release-rat --config "$RUNNER_TEMP/release-rat-ci.json"
