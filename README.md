@@ -154,6 +154,17 @@ run with optional backfill. Add `DISCORD_WEBHOOK_URL` as an Actions secret to
 enable Discord delivery. `OPENAI_API_KEY` is optional; without it, the
 deterministic judge still works.
 
+The tracked `config.json` intentionally monitors nobody by default. To use
+the starred-repositories source in GitHub Actions, add the repository Actions
+variable `RELEASE_RAT_STARRED_USERNAME` with your GitHub username. It is not a
+secret; the workflow writes it into a temporary runner-only config file. For
+local use, set `starred_username` in your own `config.json` directly.
+
+`state.db` is deliberately committed so scheduled runs retain their baseline.
+It contains public release metadata, not credentials. Forks and downloaded
+archives include that snapshot; delete `state.db` if you want a completely
+fresh local baseline.
+
 ## First run, without the notification apocalypse
 
 The first successful **normal** poll for each repository records the releases already present and marks them as seeded. Nothing is reported.

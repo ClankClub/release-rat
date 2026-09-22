@@ -39,11 +39,29 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          RELEASE_RAT_STARRED_USERNAME: ${{ vars.RELEASE_RAT_STARRED_USERNAME }}
         run: |
+          python - "$RUNNER_TEMP/release-rat.json" <<'PY'
+          import json
+          import os
+          import sys
+
+          with open("config.json", encoding="utf-8") as source:
+              config = json.load(source)
+
+          starred_username = os.environ.get("RELEASE_RAT_STARRED_USERNAME", "").strip()
+          if starred_username:
+              config["starred_username"] = starred_username
+
+          with open(sys.argv[1], "w", encoding="utf-8") as destination:
+              json.dump(config, destination, indent=2)
+              destination.write("\n")
+          PY
+
           if [[ "${{ inputs.backfill }}" == "true" ]]; then
-            python -m release_rat --backfill
+            python -m release_rat --config "$RUNNER_TEMP/release-rat.json" --backfill
           else
-            python -m release_rat --once
+            python -m release_rat --config "$RUNNER_TEMP/release-rat.json" --once
           fi
 
       - name: Persist state database
