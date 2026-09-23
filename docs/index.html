@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A self-hosted GitHub release monitor that filters for noteworthy changes and sends concise reports to Discord.">
+    <title>Repo Rat — GitHub releases in. Signal out.</title>
+    <link rel="stylesheet" href="site.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <div class="page-shell header-inner">
+        <a class="brand" href="https://github.com/ClankClub/repo-rat" aria-label="Repo Rat on GitHub">
+          <img src="assets/repo-rat-banner.svg" alt="Repo Rat — GitHub releases in. Signal out.">
+        </a>
+        <nav aria-label="Main navigation">
+          <a href="#how-it-works">How it works</a>
+          <a href="#setup">Setup</a>
+          <a class="nav-github" href="https://github.com/ClankClub/repo-rat">GitHub</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page-shell" id="main-content">
+      <section class="hero" aria-labelledby="hero-title">
+        <p class="eyebrow">A self-hosted release monitor</p>
+        <h1 id="hero-title">GitHub releases in.<br><span>Signal out.</span></h1>
+        <p class="hero-copy">Repo Rat watches public GitHub releases, filters for noteworthy changes, and sends concise reports to Discord or a local JSONL log. Run it in GitHub Actions or on your own machine.</p>
+        <p class="model-note"><strong>No API key required.</strong> Repo Rat's deterministic heuristic judge works out of the box. An OpenAI-compatible model is optional.</p>
+        <div class="hero-actions">
+          <a class="button" href="#setup">Set up Repo Rat <span aria-hidden="true">↓</span></a>
+          <a class="text-link" href="https://github.com/ClankClub/repo-rat/blob/main/README.md">Read the README</a>
+        </div>
+      </section>
+
+      <div class="feature-grid">
+        <section class="feature-panel" aria-labelledby="example-title">
+          <p class="eyebrow">A report, not a firehose</p>
+          <h2 id="example-title">One release. The useful bit.</h2>
+          <p>Each noteworthy release gets a short summary and one direct release link.</p>
+          <figure class="report-figure">
+            <img src="assets/report-preview.svg" alt="Illustrative Repo Rat Discord report with a repository and version, a concise release summary, and one GitHub release URL.">
+            <figcaption>An illustrative example. Discord may also expand GitHub links into previews.</figcaption>
+          </figure>
+          <div class="message-example">
+            <p class="message-label">Example message text</p>
+            <pre><code>acme/tool v2.4.0 — Faster local builds
+Adds parallel dependency downloads.
+https://github.com/acme/tool/releases/tag/v2.4.0</code></pre>
+          </div>
+        </section>
+
+        <section class="feature-panel" id="how-it-works" aria-labelledby="how-title">
+          <p class="eyebrow">Small, stateful, self-hosted</p>
+          <h2 id="how-title">How it works</h2>
+          <p>Repo Rat checks releases, remembers what it has processed in SQLite, judges what matters, then delivers a report or writes a JSONL record.</p>
+          <figure class="pipeline-figure">
+            <img src="assets/pipeline.svg" alt="GitHub releases flow through SQLite state and a significance judge, then to Discord or a local JSONL log.">
+          </figure>
+          <p class="detail-link"><a href="https://github.com/ClankClub/repo-rat/blob/main/docs/architecture.md">See the architecture and state lifecycle</a></p>
+        </section>
+      </div>
+
+      <section class="setup-section" id="setup" aria-labelledby="setup-title">
+        <div class="section-heading">
+          <p class="eyebrow">A few GitHub settings</p>
+          <h2 id="setup-title">Your Discord, your watchlist.</h2>
+          <p>Fork Repo Rat and let your own GitHub Actions workflow do the polling.</p>
+        </div>
+        <div class="callout setup-callout">
+          <ol class="setup-steps">
+            <li><strong>Fork this repository</strong><span>Keep the workflow and config in your own copy.</span></li>
+            <li><strong>Add a webhook secret</strong><span>In your fork, add <code>DISCORD_WEBHOOK_URL</code> under Settings → Secrets and variables → Actions → Secrets.</span></li>
+            <li><strong>Choose a watchlist</strong><span>Optionally set <code>REPO_RAT_STARRED_USERNAME</code> as an Actions variable to include that account's public starred repositories. The config file can also list repositories explicitly.</span></li>
+            <li><strong>Enable Actions</strong><span>Run the normal poll; the first normal poll quietly seeds the baseline.</span></li>
+          </ol>
+          <p class="setup-readme"><a href="#backfill-warning">Read the backfill warning</a> · <a href="https://github.com/ClankClub/repo-rat/blob/main/README.md">Read the full setup guide, including local installation</a></p>
+        </div>
+      </section>
+
+      <section class="callout backfill-callout" id="backfill-warning" aria-labelledby="backfill-title">
+        <div>
+          <p class="eyebrow">Before you click “backfill”</p>
+          <h2 id="backfill-title">Historical releases can mean a lot of messages.</h2>
+        </div>
+        <div>
+          <p>Backfill reports releases that an earlier normal poll seeded. It may send many messages at once, so leave it off for ordinary setup and use it only when you want those older reports.</p>
+          <p>Discord may expand GitHub URLs into rich link previews, which can make a busy backfill look even busier.</p>
+        </div>
+      </section>
+
+      <section class="transparency-section" aria-labelledby="transparency-title">
+        <p class="eyebrow">Open source. Your workflow.</p>
+        <h2 id="transparency-title">Know what it keeps.</h2>
+        <p>Repo Rat reads public release information and, if you opt in, a user's public starred repositories. Its checked-in SQLite state contains public release metadata and judgments, not webhook or API credentials. <code>OPENAI_API_KEY</code> is optional; without it, the heuristic judge still works.</p>
+        <p><a href="https://github.com/ClankClub/repo-rat/blob/main/docs/architecture.md">Explore the architecture and data flow</a></p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="page-shell footer-inner">
+        <p>Built to keep an eye on public releases with your workflow.</p>
+        <nav aria-label="Project links" class="footer-links">
+          <a href="https://github.com/ClankClub/repo-rat">Source</a>
+          <a href="https://github.com/ClankClub/repo-rat/issues">Issues</a>
+          <a href="https://github.com/ClankClub/repo-rat/blob/main/LICENSE">License</a>
+          <a href="https://github.com/ClankClub/repo-rat/blob/main/README.md">README</a>
+          <a href="https://github.com/ClankClub/repo-rat/blob/main/docs/architecture.md">Architecture</a>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>

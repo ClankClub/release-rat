@@ -17,3 +17,4 @@ venv/
 state.db
 release-log.jsonl
 runtime/
+.worktrees/

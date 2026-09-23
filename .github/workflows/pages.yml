@@ -1,0 +1,47 @@
+name: Deploy Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/index.html"
+      - "docs/site.css"
+      - "docs/assets/repo-rat-banner.svg"
+      - "docs/assets/report-preview.svg"
+      - "docs/assets/pipeline.svg"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Stage site files only
+        run: |
+          mkdir -p "$RUNNER_TEMP/repo-rat-pages/assets"
+          cp docs/index.html docs/site.css "$RUNNER_TEMP/repo-rat-pages/"
+          cp docs/assets/repo-rat-banner.svg docs/assets/report-preview.svg docs/assets/pipeline.svg "$RUNNER_TEMP/repo-rat-pages/assets/"
+      - name: Upload static site
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: ${{ runner.temp }}/repo-rat-pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
